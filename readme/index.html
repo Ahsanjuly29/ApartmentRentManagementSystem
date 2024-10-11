@@ -77,14 +77,12 @@
 </head>
 
 <body>
-
-    <header>
-        <img src="https://via.placeholder.com/1600x600.png?text=House+Rent+Management+System+%7C+Apartment+Rental+Application"
-            alt="HRMS Cover">
-        <h1>House Rent Management System (HRMS)</h1>
-    </header>
-
     <div class="container">
+        <header>
+            <img src="https://www.wienerberger.co.uk/about-us/news-blogs/apartment-building-designs/jcr%3Acontent/root/imagegallery_copy/image/image.imgTransformer/crop_web/md-3/1719570292479/Corp_Wall_06.jpg"
+                alt="HRMS Cover">
+            <h1>House Rent Management System (HRMS)</h1>
+        </header>
         <section>
             <h2><i class="fas fa-list icon"></i> Table of Contents</h2>
             <ul>
@@ -103,13 +101,13 @@
             <h3><i class="fas fa-tools icon"></i> Installation</h3>
             <p>Follow these steps to set up the HRMS on your local machine:</p>
             <pre>
-1. Clone the Repository: <code>git clone https://github.com/your-repo/HRMS.git</code>
-2. Navigate into the Project Directory: <code>cd HRMS</code>
-3. Install Dependencies: <code>composer install</code>
-4. Configure the Environment: <code>cp .env.example .env</code>
-5. Generate Application Key: <code>php artisan key:generate</code>
-6. Run Migrations: <code>php artisan migrate</code>
-7. Serve the Application: <code>php artisan serve</code>
+                1. Clone the Repository: <code>git clone https://github.com/your-repo/HRMS.git</code>
+                2. Navigate into the Project Directory: <code>cd HRMS</code>
+                3. Install Dependencies: <code>composer install</code>
+                4. Configure the Environment: <code>cp .env.example .env</code>
+                5. Generate Application Key: <code>php artisan key:generate</code>
+                6. Run Migrations: <code>php artisan migrate</code>
+                7. Serve the Application: <code>php artisan serve</code>
             </pre>
         </section>
 
@@ -125,8 +123,10 @@
                 <li><strong>payments</strong> - Tracks payments made by renters.</li>
                 <li><strong>bank_info</strong> - Records renter's bank payment details.</li>
             </ul>
-            <img src="https://via.placeholder.com/1200x500.png?text=HRMS+Database+Design" alt="Database Structure"
-                class="cover">
+            <div id="graph" style="
+                display: flex;
+                justify-content: center;
+                align-items: center;"></div>
         </section>
 
         <section id="features">
@@ -151,8 +151,7 @@
                 <li>Generate monthly bills and track due payments</li>
                 <li>Update dynamic service charges</li>
             </ul>
-            <img src="https://via.placeholder.com/1200x600.png?text=HRMS+Admin+Dashboard" alt="Admin Dashboard"
-                class="cover">
+            <img src="https://icecream.me/uploads/c7bcc21ac70dd9fb81eba488ec2e5e69.png" alt="Admin Dashboard"class="cover">
         </section>
 
         <section id="client-view">
@@ -197,6 +196,104 @@
         </section>
     </div>
 
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        const data = {
+            nodes: [
+                { id: "Floors", group: 1 },
+                { id: "Apartments", group: 2 },
+                { id: "Renters", group: 3 },
+                { id: "Service Charges", group: 4 },
+                { id: "Bills", group: 5 },
+                { id: "Payments", group: 6 },
+                { id: "Bank Info", group: 7 }
+            ],
+            links: [
+                { source: "Floors", target: "Apartments", value: 1 },
+                { source: "Apartments", target: "Renters", value: 1 },
+                { source: "Apartments", target: "Service Charges", value: 1 },
+                { source: "Renters", target: "Bills", value: 1 },
+                { source: "Renters", target: "Payments", value: 1 },
+                { source: "Renters", target: "Bank Info", value: 1 },
+                { source: "Bills", target: "Service Charges", value: 1 },
+                { source: "Payments", target: "Bills", value: 1 }
+            ]
+        };
+
+        const width = 800;
+        const height = 600;
+
+        const svg = d3.select("#graph").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink().id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("stroke-width", d => Math.sqrt(d.value))
+            .attr("stroke", "#999");
+
+        const node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node");
+
+        node.append("circle")
+            .attr("r", 10)
+            .attr("fill", "#3c8dbc")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("text")
+            .attr("dx", 15)
+            .attr("dy", ".35em")
+            .text(d => d.id);
+
+        simulation
+            .nodes(data.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(data.links);
+
+        function ticked() {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        }
+
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+        }
+
+        function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        }
+
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+        }
+    </script>
 </body>
 
 </html>

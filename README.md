@@ -4,7 +4,7 @@ Here's the fully detailed **README.md** with rich explanations, large cover imag
 
 # 🏢 **House Rent Management System (HRMS)**
 
-![HRMS Cover](https://via.placeholder.com/1600x600.png?text=House+Rent+Management+System+%7C+Apartment+Rental+Application)
+![HRMS Cover](https://www.wienerberger.co.uk/about-us/news-blogs/apartment-building-designs/jcr%3Acontent/root/imagegallery_copy/image/image.imgTransformer/crop_web/md-3/1719570292479/Corp_Wall_06.jpg)
 
 Welcome to the **House Rent Management System (HRMS)**, a Laravel-based application for managing apartment rentals. It allows property owners or managers to handle multiple renters, apartments, bills, and payments. Renters can log in with a unique code, view their bills, and even download their payment history in PDF format.
 
@@ -79,9 +79,70 @@ This project contains multiple tables designed to manage floors, apartments, ren
 | `bank_info`        | Saves renter's bank details for bill payments.                |
 
 ### 💡 **Database Diagram**:
-![Database Structure](https://via.placeholder.com/1200x500.png?text=HRMS+Database+Design)
+Here’s a graphical representation of the relationships between the tables in your **House Rent Management System** (HRMS):
 
----
+```
++-----------------+        +------------------+
+|     floors      |        |     renters       |
++-----------------+        +------------------+
+| id              |        | id               |
+| floor_name      |        | renter_name       |
+| total_apartments|        | contact_number    |
+| timestamps      |        | email             |
++-----------------+        | unique_renter_code|
+                           | timestamps        |
+                           +------------------+
+                                   |
+                                   | 1:N
+                                   |
+                                   v
+                          +--------------------+
+                          | apartment_renters  |
+          +-------------->|--------------------|<---------------+
+          |               | id                 |                |
+          |               | apartment_id (FK)  |                |
+          |               | renter_id (FK)     |                |
++-----------------+       | timestamps         |    +-----------------+
+|   apartments    |       +--------------------+    |    bills         |
++-----------------+                                   +-----------------+
+| id              |                                   | id              |
+| floor_id (FK)   |                                   | apartment_renter_id (FK)|
+| apartment_number|                                   | total_rent      |
+| rent            |                                   | bill_month      |
+| timestamps      |                                   | timestamps      |
++-----------------+                                   +-----------------+
+          |
+          | 1:N
+          |
+          v
++-------------------+
+|  service_charges  |
++-------------------+
+| id                |
+| apartment_id (FK) |
+| charge_type       |
+| amount            |
+| timestamps        |
++-------------------+
+
+                            +-----------------+
+                            |    payments     |
+                            +-----------------+
+                            | id              |
+                            | bill_id (FK)    |
+                            | amount_paid     |
+                            | payment_date    |
+                            | timestamps      |
+                            +-----------------+
+```
+
+### Key Relationships:
+- **Floors ↔ Apartments**: A floor can have multiple apartments (One-to-Many).
+- **Apartments ↔ Renters**: An apartment can have one or multiple renters, and a renter can rent multiple apartments (Many-to-Many via the `apartment_renters` pivot table).
+- **Apartments ↔ Service Charges**: An apartment can have multiple service charges (One-to-Many).
+- **Apartment Renters ↔ Bills**: A bill is generated for each combination of an apartment and a renter (One-to-Many).
+- **Bills ↔ Payments**: A bill can have multiple payments (One-to-Many).
+
 
 ## 💡 **Features**
 
@@ -115,7 +176,7 @@ The admin dashboard is designed to simplify rental property management.
 - **Bills Management**: Generate monthly bills, including rent and service charges, and view past due payments.
 - **Service Charges**: Admins can update the dynamic service charges for any apartment at any time.
 
-![Admin Dashboard](https://via.placeholder.com/1200x600.png?text=HRMS+Admin+Dashboard)
+![Admin Dashboard](https://icecream.me/uploads/c7bcc21ac70dd9fb81eba488ec2e5e69.png)
 
 ---
 
