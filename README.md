@@ -1,7 +1,3 @@
-Here's the fully detailed **README.md** with rich explanations, large cover images, icons, and an engaging structure, as you requested:
-
----
-
 # 🏢 **House Rent Management System (HRMS)**
 
 ![HRMS Cover](https://www.wienerberger.co.uk/about-us/news-blogs/apartment-building-designs/jcr%3Acontent/root/imagegallery_copy/image/image.imgTransformer/crop_web/md-3/1719570292479/Corp_Wall_06.jpg)
